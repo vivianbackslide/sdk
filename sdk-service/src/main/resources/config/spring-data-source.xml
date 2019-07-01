@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        ">
+    
+    <!-- 配置库查询-->
+	<bean id="db_conf" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="username" value="${jdbc.conf.username}"/>
+		<property name="password" value="${jdbc.conf.password}"/>
+		<property name="url" value="${jdbc.conf.url}"/>
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		<!-- 连接池最大使用连接数量 -->
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="${jdbc.minIdle}"/>
+		<!-- 连接池最大空闲 -->
+		<property name="maxIdle" value="${jdbc.maxIdle}"/>
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+	</bean>
+    
+	<!-- 用户主库用于更新 -->
+	<!--<bean id="db_master" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="username" value="${jdbc.master.username}"/>
+		<property name="password" value="${jdbc.master.password}"/>
+		<property name="url" value="${jdbc.master.url}"/>
+		&lt;!&ndash; 初始化连接大小 &ndash;&gt;
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		&lt;!&ndash; 连接池最大使用连接数量 &ndash;&gt;
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+		&lt;!&ndash; 连接池最小空闲 &ndash;&gt;
+		<property name="minIdle" value="${jdbc.minIdle}"/>
+		&lt;!&ndash; 连接池最大空闲 &ndash;&gt;
+		<property name="maxIdle" value="${jdbc.maxIdle}"/>
+		&lt;!&ndash; 获取连接最大等待时间 &ndash;&gt;
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+	</bean>
+	
+	&lt;!&ndash; 用户从库用于查询&ndash;&gt;
+	<bean id="db_slave" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="username" value="${jdbc.slave.username}"/>
+		<property name="password" value="${jdbc.slave.password}"/>
+		<property name="url" value="${jdbc.slave.url}"/>
+		&lt;!&ndash; 初始化连接大小 &ndash;&gt;
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		&lt;!&ndash; 连接池最大使用连接数量 &ndash;&gt;
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+		&lt;!&ndash; 连接池最小空闲 &ndash;&gt;
+		<property name="minIdle" value="${jdbc.minIdle}"/>
+		&lt;!&ndash; 连接池最大空闲 &ndash;&gt;
+		<property name="maxIdle" value="${jdbc.maxIdle}"/>
+		&lt;!&ndash; 获取连接最大等待时间 &ndash;&gt;
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+	</bean>-->
+
+	<!-- 动态数据源 -->
+	<!--<bean id="dataSource" class="com.ftx.sdk.common.db.datasource.DynamicDataSource">
+		<property name="targetDataSources">
+			<map>
+				&lt;!&ndash;<entry key="db_master" value-ref="db_master"></entry>
+				<entry key="db_slave" value-ref="db_slave"></entry>&ndash;&gt;
+				<entry key="db_conf" value-ref="db_conf"></entry>
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="db_conf"></property>
+	</bean>-->
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" abstract="false" lazy-init="false" >
+    	<property name="dataSource" ref="db_conf"/>
+    </bean>
+
+	<!--<bean name="dao" class="com.ftx.sdk.common.db.dao.JDBCBaseDao">
+		<property name="tablePrefix" value="T_"></property>
+	</bean>-->
+</beans>

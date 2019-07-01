@@ -1,0 +1,14 @@
+com\ftx\sdk\controller\channel\HuaweiPayController.class
+com\ftx\sdk\controller\ConfigController.class
+com\ftx\sdk\controller\SupplementController.class
+com\ftx\sdk\controller\UserController$1.class
+com\ftx\sdk\controller\channel\HuaweiLoginHandler.class
+com\ftx\sdk\config\ConsumerConfiguration.class
+com\ftx\sdk\controller\OrderController.class
+com\ftx\sdk\controller\channel\MaoerPayController.class
+com\ftx\sdk\ConsumerStart.class
+com\ftx\sdk\filter\PathFilter.class
+com\ftx\sdk\controller\channel\XXXUserController.class
+com\ftx\sdk\controller\VerifyTokenController.class
+com\ftx\sdk\controller\SupplementController$1.class
+com\ftx\sdk\controller\UserController.class
