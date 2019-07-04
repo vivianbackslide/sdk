@@ -27,7 +27,7 @@ public abstract class LoginHandlerAdapter implements LoginHandler {
 
     @Override
     public final User login(SdkParamCache configCache, LoginInfo loginInfo) throws ChannelLoginException, ServerException {
-        if (Strings.isNullOrEmpty(configCache.getChannelDomain())) {
+        /*if (Strings.isNullOrEmpty(configCache.getChannelDomain())) {
             logger.error("执行验证失败: [未配置渠道接口域名, channel_id={}, channel_label={}]", configCache.getChannelId(), configCache.getChannelLabel());
             throw new ChannelLoginException("channel config domain null");
         }
@@ -35,7 +35,7 @@ public abstract class LoginHandlerAdapter implements LoginHandler {
         if (!configCache.channelAPI().containsKey("api_login")) {
             logger.error("执行验证失败: [未配置渠道登录验证接口, channel_id={}, channel_label={}}]", configCache.getChannelId(), configCache.getChannelLabel());
             throw new ChannelLoginException("channel config api null");
-        }
+        }*/
 
         //获取app渠道版本，执行对应渠道登陆校验方法
         String version = configCache.verson();
