@@ -1,11 +1,10 @@
-package com.ftx.sdk.controller.channel;
+package com.ftx.sdk.login;
 
 import com.ftx.sdk.annotation.ChannelAnnotation;
 import com.ftx.sdk.entity.sdk.SdkParamCache;
 import com.ftx.sdk.entity.user.LoginInfo;
 import com.ftx.sdk.entity.user.User;
 import com.ftx.sdk.exception.ChannelLoginException;
-import com.ftx.sdk.login.LoginHandlerAdapter;
 import com.ftx.sdk.model.VivoLoginModel;
 import com.ftx.sdk.utils.HttpTools;
 import com.google.common.base.Strings;

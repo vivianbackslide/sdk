@@ -1,4 +1,4 @@
-package com.ftx.sdk.controller.channel;
+package com.ftx.sdk.login;
 
 import com.ftx.sdk.annotation.ChannelAnnotation;
 import com.ftx.sdk.entity.sdk.SdkParamCache;

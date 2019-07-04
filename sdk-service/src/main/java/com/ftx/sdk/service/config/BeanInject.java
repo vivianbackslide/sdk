@@ -1,6 +1,8 @@
 package com.ftx.sdk.service.config;
 
+import com.ftx.sdk.login.LoginHandlerManager;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,5 +24,16 @@ public class BeanInject {
     public Gson gson() {
         return new Gson();
     }
+
+    @Bean(initMethod = "initLoginHandler")
+    public LoginHandlerManager loginHandlerManager() {
+        return new LoginHandlerManager();
+    }
+
+    @Bean
+    public JsonParser jsonParser() {
+        return new JsonParser();
+    }
+
 
 }

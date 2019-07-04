@@ -35,7 +35,7 @@ public class LoginHandlerManager {
     }
 
     public LoginHandler getLoginHandler(Integer channelId) throws ServerException {
-        if(!loginHandlerMap.containsKey(channelId)) {
+        if (!loginHandlerMap.containsKey(channelId)) {
             logger.error("Login接口异常: [LoginInfo handler not found, channel={}]", channelId);
             throw new ServerException("未找到登录验证处理方法");
         }
@@ -76,7 +76,7 @@ public class LoginHandlerManager {
             logger.info("Init LoginInfo handlers error:{}", e.getMessage(), e);
             sb.append("============================================= Init LoginInfo handler error ============================================");
             throw e;
-        }finally {
+        } finally {
             logger.info(sb.toString());
         }
     }
