@@ -58,7 +58,9 @@ public class ConfigController {
             //确保Map类型的ChannelAPI参数已经加载
             sdkParamConfig.channelConfig();
 
-            response = gson.toJson(new JsonResult<>(ErrorCode.Success.SUCCESS.getCode(),"success", sdkParamConfig));
+            //response = gson.toJson(new JsonResult<>(ErrorCode.Success.SUCCESS.getCode(),"success", sdkParamConfig));
+
+            response = com.alibaba.fastjson.JSON.toJSONString(new JsonResult<>(ErrorCode.Success.SUCCESS.getCode(), "success", sdkParamConfig));
         }
 
         logger.debug("/config/init接口结束");
