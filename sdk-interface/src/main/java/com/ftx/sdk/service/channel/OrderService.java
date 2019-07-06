@@ -25,4 +25,6 @@ public interface OrderService {
     List getOrders(SupplementType type, long beginTime, int appId, long orderId);
     String getSupplementSign();
     List<TSdkOrder> queryOrderByStatus(ChargeStatus status);
+
+    void orderUpdate(long orderId, String channelBillNo, ChargeStatus status);
 }

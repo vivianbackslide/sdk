@@ -88,4 +88,9 @@ public class OrderServiceImpl implements OrderService {
     public List<TSdkOrder> queryOrderByStatus(ChargeStatus status) {
         return orderDao.queryOrderByStatus(status);
     }
+
+    @Override
+    public void orderUpdate(long orderId, String channelBillNo, ChargeStatus status) {
+        orderDao.orderUpdate(orderId, channelBillNo, status);
+    }
 }

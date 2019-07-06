@@ -3,6 +3,7 @@ package com.ftx.sdk.controller.channel;
 import com.ftx.sdk.common.constants.DubboConstant;
 import com.ftx.sdk.entity.orm.TSdkOrder;
 import com.ftx.sdk.entity.sdk.SdkParamCache;
+import com.ftx.sdk.entity.type.ChargeStatus;
 import com.ftx.sdk.model.MaoerPayModel;
 import com.ftx.sdk.service.channel.CallbackService;
 import com.ftx.sdk.service.channel.OrderService;
@@ -79,11 +80,17 @@ public class MaoerPayController {
             // 判断回调验证是否成功，成功则进行异步发货
             //比较游戏传来的sign和自己拼接传来的sign是否相同，相同则表示没有被修改，可以发货
             if (sign.equalsIgnoreCase(mySign)) {
+                /** 状态是1则支付成功，否则支付失败*/
+                if (1 != maoerPayModel.getStatus()) {
+                    orderService.orderUpdate(charge.getOrderId(), charge.getChannelBillNum(), ChargeStatus.PayFailed);
+                    return FAILED;
+                }
                 //执行统一逻辑，包括入库和通知游戏
                 callbackService.orderHandler(charge, paramCache);
                 logger.info("maoer_pay_callback 支付成功!");
                 return SUCCESS;
             } else {
+                orderService.orderUpdate(charge.getOrderId(), charge.getChannelBillNum(), ChargeStatus.PayFailed);
                 logger.error("maoer_pay_callback接口签名校验异常: sign:{}, mySign:{}, signStr:{}]", sign, mySign, signStr);
                 return ErrorSign;
             }

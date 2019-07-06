@@ -7,7 +7,7 @@ public enum ChargeStatus {
     NewOrder("NewOrder", 0),
     PayFailed("PayFail", 1),
     IllegalAmount("IllegalAmount", 2),
-    PaySuccessNotifyFailed("Notify", 3),
+    PaySuccessNotifyFailed("PaySuccessNotifyFailed", 3),
     PaySuccessNotifySuccess("PaySuccessNotifySuccess", 4);
 
 
