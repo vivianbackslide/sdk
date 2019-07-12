@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
@@ -10,12 +11,16 @@
 		http://www.springframework.org/schema/context/spring-context-4.0.xsd
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-4.0.xsd
         ">
 
 	<context:component-scan base-package="com.ftx.sdk" />
 	
 	<aop:aspectj-autoproxy />
 
+	<task:annotation-driven scheduler="myScheduler"/>
+	<task:scheduler id="myScheduler" pool-size="5"/>
 	<!--<bean name="dbaspect" class="com.ftx.sdk.common.db.aspectj.ServiceChooseDataSourceAspect"></bean>
 	&lt;!&ndash;配置缓存Dao&ndash;&gt;
 	<bean name="SystemConfigOnDBService" class="com.ftx.sdk.service.config.SystemConfigOnDBServiceImpl"></bean>-->

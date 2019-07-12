@@ -22,15 +22,15 @@
         </property>
     </bean>
 
-    <context:component-scan base-package="com.gufeng.root.task" />
+    <context:component-scan base-package="com.ftx.sdk.task" />
 
     <task:annotation-driven mode="proxy"/>
 
-    <dubbo:application name="gufeng-task" />
+    <dubbo:application name="sdk-task" />
 
     <dubbo:registry address="${dubbo-registry}"/>
 
-    <dubbo:annotation package="com.gufeng.root.task"/>
+    <dubbo:annotation package="com.ftx.sdk.task"/>
 
 
 </beans>

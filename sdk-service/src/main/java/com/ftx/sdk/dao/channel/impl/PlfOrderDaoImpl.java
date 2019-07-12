@@ -104,7 +104,7 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
     @Override
     public List<TSdkOrder> queryOrderByStatus(ChargeStatus status) {
         String sql = "select orderId, packageId, channel_bill_num channelBillNum, game_bill_num gameBillNum, `status`, channelUserId userId, amount, exInfo, notifyUrl, time from t_sdk_order where status = ?";
-        Object[] object = {status};
+        Object[] object = {status.getType()};
         return jdbcTemplate.query(sql, object, new BeanPropertyRowMapper<>(TSdkOrder.class));
     }
 
