@@ -3,26 +3,24 @@ package com.ftx.sdk.entity.type;
 /**
  * Created by zeta.cai on 2017/7/26.
  */
-public enum  ChargeStatus {
+public enum ChargeStatus {
     NewOrder("NewOrder", 0),
-    VerifyFailed("VerifyFailed", 1),
+    PayFailed("PayFail", 1),
     IllegalAmount("IllegalAmount", 2),
-    Notify("Notify", 3),
-    NotifyFailed("NotifyFailed", 4),
-    Complete("Complete", 5),
-    ReCharge("ReCharge", 6);
+    PaySuccessNotifyFailed("Notify", 3),
+    PaySuccessNotifySuccess("PaySuccessNotifySuccess", 4);
 
 
     private String name;
     private int type;
 
-    private ChargeStatus(String name, int type){
+    ChargeStatus(String name, int type) {
         this.name = name;
         this.type = type;
     }
 
-    public static String getName(int type){
-        for (ChargeStatus i : ChargeStatus.values()){
+    public static String getName(int type) {
+        for (ChargeStatus i : ChargeStatus.values()) {
             if (i.getType() == type)
                 return i.name;
         }

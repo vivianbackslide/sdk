@@ -28,7 +28,7 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
 
     @Override
     public TSdkOrder queueOrder(long orderId) {
-        String sql = "select packageId, channel_bill_num channelBillNum, game_bill_num gameBillNum, `status`, channelUserId userId, amount, exInfo, notifyUrl, time from t_sdk_order where orderId = ?";
+        String sql = "select orderId, packageId, channel_bill_num channelBillNum, game_bill_num gameBillNum, `status`, channelUserId userId, amount, exInfo, notifyUrl, time from t_sdk_order where orderId = ?";
         Object[] object = {orderId};
         return jdbcTemplate.queryForObject(sql, object, BeanPropertyRowMapper.newInstance(TSdkOrder.class));
     }
@@ -42,10 +42,11 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
     @Override
     public void orderUpdate(long orderId, String channelBillNo, ChargeStatus status) {
         String sql = "UPDATE t_sdk_order SET channel_bill_num = ? ,status = ? WHERE orderId = ?";
-        jdbcTemplate.update(sql, channelBillNo, status, orderId);
+        Object[] objects0 = {channelBillNo, status.getType(), orderId};
+        jdbcTemplate.update(sql, objects0);
 
         // TODO: 添加数据到t_channel_charge, 目的是匹配到旧版本的运营数据， 等全面改用新版时删除对应代码
-        if (status == ChargeStatus.Complete) {
+        if (status == ChargeStatus.PaySuccessNotifySuccess) {
             TSdkOrder order = queueOrder(orderId);
             String insertSql = "insert into t_channel_charge (channel_id, channel_bill_num, game_id, game_bill_num, flp_status, flp_bill_num, userid, bill_fee, exinfo, time) values (?,?,?,?,?,?,?,?,?,?)";
             TChannelCharge tChannelCharge = new TChannelCharge(order);
@@ -82,7 +83,7 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
         }
         sql += " limit 100";
 
-        return jdbcTemplate.queryForList(sql, TSdkOrder.class);
+        return jdbcTemplate.queryForList(sql, new BeanPropertyRowMapper<>(TSdkOrder.class));
 
 
 //        String sql = "SELECT * from t_sdk_order WHERE status = 3";
@@ -102,9 +103,9 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
 
     @Override
     public List<TSdkOrder> queryOrderByStatus(ChargeStatus status) {
-        String sql = "select packageId, channel_bill_num, game_bill_num, status, channelUserId, amount, exInfo, notifyUrl, time from t_sdk_order where status = ?";
+        String sql = "select orderId, packageId, channel_bill_num channelBillNum, game_bill_num gameBillNum, `status`, channelUserId userId, amount, exInfo, notifyUrl, time from t_sdk_order where status = ?";
         Object[] object = {status};
-        return jdbcTemplate.queryForList(sql, object, TSdkOrder.class);
+        return jdbcTemplate.query(sql, object, new BeanPropertyRowMapper<>(TSdkOrder.class));
     }
 
     @Override

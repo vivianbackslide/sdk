@@ -84,7 +84,7 @@ public class CallbackServiceImpl implements CallbackService {
     @Scheduled(cron = "0 */1 * * * *")
     public void reNotify() {
         //List<String> list = redisService.popNotifyCache();
-        List<TSdkOrder> tSdkOrders = orderService.queryOrderByStatus(ChargeStatus.NotifyFailed);
+        List<TSdkOrder> tSdkOrders = orderService.queryOrderByStatus(ChargeStatus.PaySuccessNotifyFailed);
 
         for (TSdkOrder order : tSdkOrders) {
             String notifyUrl = order.getNotifyUrl();
@@ -108,7 +108,7 @@ public class CallbackServiceImpl implements CallbackService {
                 //设置订单状态通知失败
                 orderService.updateStatus(Long.parseLong((notifier.callbackInfo.getPlatformBillNo())), ChargeStatus.NotifyFailed);
             } else if (ReNotifierTimeInterval.needReNotify(notifier.beginTimeMillis, notifier.count)) {  */        //当前时间超过这次通知的时间片  执行通知
-                EXECUTOR_SERVICE.submit(new Notifier(notifier));
+            EXECUTOR_SERVICE.submit(new Notifier(notifier));
            /* } else {         //当前时间小于这次通知的时间片  不通知  将该task放回通知队列
                 // pushNotification(notifier);
             }*/
@@ -165,7 +165,7 @@ public class CallbackServiceImpl implements CallbackService {
 
             if (null == result || !"success".equalsIgnoreCase(result.trim())) {
                 logger.info("调用发货接口失败:[URL={}, package_id={}, result={}]", notifyUrl, callbackInfo.getPackageId(), result);
-               // handleFailed();
+                handleFailed();
             } else {
                 logger.info("调用发货接口成功:[URL={}, package_id={}]", notifyUrl, callbackInfo.getPackageId());
                 handleSucceed();
@@ -178,12 +178,12 @@ public class CallbackServiceImpl implements CallbackService {
             orderService.orderComplete(Long.parseLong(callbackInfo.getPlatformBillNo()), callbackInfo.getChannelBillNo());
         }
 
-        /*private void handleFailed() {
-            if (1 == count) {
-                orderService.orderUpdateOnFirstCallback(Long.parseLong(callbackInfo.getPlatformBillNo()), callbackInfo.getChannelBillNo(), ChargeStatus.Notify);
-                beginTimeMillis = System.currentTimeMillis();
-            }
+        private void handleFailed() {
+           /* if (1 == count) {*/
+                orderService.orderUpdateOnFirstCallback(Long.parseLong(callbackInfo.getPlatformBillNo()), callbackInfo.getChannelBillNo(), ChargeStatus.PaySuccessNotifyFailed);
+                //beginTimeMillis = System.currentTimeMillis();
+            /* }*/
             //pushNotification(this);
-        }*/
+        }
     }
 }

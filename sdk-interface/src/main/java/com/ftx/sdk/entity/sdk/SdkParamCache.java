@@ -21,29 +21,29 @@ public class SdkParamCache implements Serializable {
     //==========   app参数   ============
     private Integer appId;
     // 游戏和我们平台校验的key
-    private transient String appSecret;
+    private /*transient*/ String appSecret;
     // 游戏回调地址
-    private transient String appPayServer;
+    private /*transient*/ String appPayServer;
     //==========   channel参数   ============
     //渠道Id
-    private transient int channelId;
+    private /*transient*/ int channelId;
     //渠道标识码
     private String channelLabel;
     //支付回调地址
     private String callBackUrl;
     //渠道服务器域名
-    private transient String channelDomain;
+    private /*transient*/ String channelDomain;
     //渠道接口
-    private transient String channelAPI;
+    private /*transient*/ String channelAPI;
     //==========   package参数   ============
     //这个包的渠道配置
-    private transient String status;
+    private /*transient*/ String status;
     //这个包的渠道配置
-    private transient String channelConfig;
+    private /*transient*/ String channelConfig;
     //==========   逻辑参数   ============
     @SerializedName("channelConfig")
     private Map<String, String> channelConfigMap;
-    private transient Map<String, String> channelAPIMap;
+    private /*transient*/ Map<String, String> channelAPIMap;
 
 
     public SdkParamCache(){}
