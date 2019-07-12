@@ -72,8 +72,8 @@ public class OrderServiceImpl implements OrderService {
 
     public void VerifyFailed(TSdkOrder charge) {
         String sql = "update t_sdk_order set status = ? where orderId = ?";
-        //Object[] object = {(short) ChargeStatus.VerifyFailed.getType(), charge.getOrderId()};
-        //jdbcTemplate.update(sql, object);
+        Object[] object = {(short) ChargeStatus.PayFailed.getType(), charge.getOrderId()};
+        jdbcTemplate.update(sql, object);
     }
 
     public List getOrders(SupplementType type, long beginTime, int appId, long orderId) {
