@@ -1,5 +1,6 @@
 package com.ftx.sdk.entity.order;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import java.util.Map;
  * @author zhenbiao.cai
  * @date 2016/6/23.
  */
-public class ReNotifierTimeInterval {
+public class ReNotifierTimeInterval implements Serializable {
 
     //测试的用这个
 //    private final static long first_time_distance = 1 * 60 * 1000;

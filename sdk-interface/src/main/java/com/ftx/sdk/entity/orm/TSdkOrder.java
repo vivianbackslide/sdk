@@ -4,6 +4,7 @@ import com.ftx.sdk.utils.VerifyUitl;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_sdk_order")
-public class TSdkOrder {
+public class TSdkOrder implements Serializable {
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +50,8 @@ public class TSdkOrder {
 
     private Timestamp completedTime;
 
-    public boolean qualified(){
-        if (!VerifyUitl.verifyPackageId(Integer.parseInt(packageId))){
+    public boolean qualified() {
+        if (!VerifyUitl.verifyPackageId(Integer.parseInt(packageId))) {
             return false;
         }
         return true;

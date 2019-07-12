@@ -6,6 +6,7 @@ import com.ftx.sdk.entity.orm.TSdkOrder;
 import com.ftx.sdk.entity.type.ChargeStatus;
 import com.ftx.sdk.entity.type.SupplementType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,9 @@ public class PlfOrderDaoImpl implements PlfOrderDao {
 
     @Override
     public TSdkOrder queueOrder(long orderId) {
-        String sql = "select packageId, channel_bill_num, game_bill_num, status, channelUserId, amount, exInfo, notifyUrl, time from t_sdk_order where orderId = ?";
+        String sql = "select packageId, channel_bill_num channelBillNum, game_bill_num gameBillNum, `status`, channelUserId userId, amount, exInfo, notifyUrl, time from t_sdk_order where orderId = ?";
         Object[] object = {orderId};
-        return jdbcTemplate.queryForObject(sql, object, TSdkOrder.class);
+        return jdbcTemplate.queryForObject(sql, object, BeanPropertyRowMapper.newInstance(TSdkOrder.class));
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  * @date 2016/6/15.
  * SDK AppPackage配置参数
  */
-public class SdkParamCache {
+public class SdkParamCache implements Serializable {
 
     //包id
     private Integer packageId;

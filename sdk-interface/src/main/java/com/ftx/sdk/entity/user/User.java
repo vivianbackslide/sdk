@@ -3,11 +3,13 @@ package com.ftx.sdk.entity.user;
 
 import com.ftx.sdk.entity.sdk.SdkParamCache;
 
+import java.io.Serializable;
+
 /**
  * @author zhenbiao.cai
  * @date 2016/6/15.
  */
-public class User {
+public class User implements Serializable {
     private int channelId;
     private String channelName;
     private String userId;

@@ -3,7 +3,9 @@ package com.ftx.sdk.entity.order;
 
 import com.ftx.sdk.entity.type.SupplementType;
 
-public class SupplementOrder {
+import java.io.Serializable;
+
+public class SupplementOrder implements Serializable {
     private int type; // 详见SupplementType
     private long orderId; // 如果不限制订单号，传0
     private String channelBillNum; // 不能传0。如果type为3，该参数才有用。不设置，请传空

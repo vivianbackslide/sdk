@@ -1,6 +1,7 @@
 package com.ftx.sdk.entity.orm;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -8,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_gameRole_log")
-public class TGameRoleLog {
+public class TGameRoleLog implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;

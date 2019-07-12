@@ -4,6 +4,7 @@ package com.ftx.sdk.entity.orm;
 import com.ftx.sdk.utils.PackageUtil;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_channel_charge")
-public class TChannelCharge {
+public class TChannelCharge implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_cp_channel_user_map")
-public class TUserMap {
+public class TUserMap implements Serializable {
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.AUTO)

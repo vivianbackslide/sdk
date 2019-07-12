@@ -1,11 +1,12 @@
 package com.ftx.sdk.entity.user;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by zeta.cai on 2017/6/28.
  */
-public class StatisModel {
+public class StatisModel implements Serializable {
     @NotNull(message = "appId is Null")
     private Integer appId;
     @NotNull(message = "channelId is Null")

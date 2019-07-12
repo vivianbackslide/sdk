@@ -3,10 +3,12 @@ package com.ftx.sdk.entity.user;
 
 import com.ftx.sdk.entity.orm.TGameUserRoleModel;
 
+import java.io.Serializable;
+
 /**
  * Created by zeta.cai on 2017/6/9.
  */
-public class SubmitDataModel {
+public class SubmitDataModel implements Serializable {
     private int appId;
     private String channelId;
     private String channelUserId;

@@ -3,11 +3,13 @@ package com.ftx.sdk.entity.order;
 
 import com.ftx.sdk.entity.orm.TSdkOrder;
 
+import java.io.Serializable;
+
 /**
  * @author zhenbiao.cai
  * @date 2016/6/21.
  */
-public class CallbackModel {
+public class CallbackModel implements Serializable {
 
     // 我们平台自己的流水号
     private String platformBillNo;

@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author zhenbiao.cai
  * @date 2016/6/15.
  */
-public class LoginInfo {
+public class LoginInfo implements Serializable {
     /**
      * 在SDK平台分配的应用ID
      */

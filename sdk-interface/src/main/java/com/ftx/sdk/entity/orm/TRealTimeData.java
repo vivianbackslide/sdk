@@ -4,6 +4,7 @@ package com.ftx.sdk.entity.orm;
 import com.ftx.sdk.entity.user.StatisModel;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_real_time_data")
-public class TRealTimeData {
+public class TRealTimeData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

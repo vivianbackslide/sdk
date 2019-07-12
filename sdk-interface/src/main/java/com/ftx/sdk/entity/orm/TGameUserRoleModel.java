@@ -4,6 +4,7 @@ package com.ftx.sdk.entity.orm;
 import com.ftx.sdk.utils.VerifyUitl;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "t_cp_userRole")
-public class TGameUserRoleModel {
+public class TGameUserRoleModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
