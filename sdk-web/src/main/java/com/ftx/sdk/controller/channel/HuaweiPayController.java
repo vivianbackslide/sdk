@@ -12,6 +12,7 @@ import com.ftx.sdk.utils.huawei.CommonUtil;
 import com.ftx.sdk.utils.huawei.SignUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,11 +51,11 @@ public class HuaweiPayController {
 
     @Autowired
     private Gson gson;
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private CallbackService callbackService;
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private SDKService sdkService;
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private OrderService orderService;
 
     @RequestMapping(value = "/charge/huawei")
@@ -75,6 +77,15 @@ public class HuaweiPayController {
             br.close();
             str = sb.toString();
             logger.debug("huawei pay callback:{}", str);
+
+            if (StringUtils.isEmpty(str)) {
+                ArrayList<String> entries = new ArrayList<>();
+                Map<String, String[]> parameterMap = request.getParameterMap();
+                for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                    entries.add(entry.getKey() + "=" + entry.getValue()[0]);
+                }
+                str = StringUtils.join(entries, "&");
+            }
 
             // 1.检查参数有效性
             Map<String, Object> map = getValue(str);
