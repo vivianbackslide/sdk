@@ -61,10 +61,10 @@ public class HuaweiPayController {
             // 1.检查参数有效性
             request.setCharacterEncoding("UTF-8");
             Map<String, Object> map = getValue(request);
-            logger.info("charge huawei map:{}", map.toString());
             if (map == null || map.isEmpty()) {
                 return createResponse(INVALID_PARAMS);
             }
+            logger.info("charge huawei map:{}", map.toString());
 
             String orderId = (String) map.get("requestId");
             // 获取订单
