@@ -5,10 +5,18 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
+import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 描述：dubbo配置类
@@ -35,6 +43,18 @@ public class ConsumerConfiguration {
     @Bean
     public Gson gson() {
         return new Gson();
+    }
+
+    @Bean
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new OrderedHiddenHttpMethodFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response, FilterChain filterChain) throws
+                    ServletException, IOException {
+                filterChain.doFilter(request, response);
+            }
+        };
     }
 }
 

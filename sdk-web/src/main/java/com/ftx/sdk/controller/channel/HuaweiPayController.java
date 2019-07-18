@@ -6,13 +6,10 @@ import com.ftx.sdk.entity.sdk.SdkParamCache;
 import com.ftx.sdk.service.channel.CallbackService;
 import com.ftx.sdk.service.channel.OrderService;
 import com.ftx.sdk.service.channel.SDKService;
-import com.ftx.sdk.utils.MapsUtils;
 import com.ftx.sdk.utils.MoneyUtil;
 import com.ftx.sdk.utils.huawei.CommonUtil;
-import com.ftx.sdk.utils.huawei.SignUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +22,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,37 +56,13 @@ public class HuaweiPayController {
 
     @RequestMapping(value = "/charge/huawei")
     public String callback(HttpServletRequest request) {
-        String str = "";
-        InputStream stream = null;
-        InputStreamReader isr = null;
-        BufferedReader br = null;
         try {
-            String line = null;
-            StringBuffer sb = new StringBuffer();
-            request.setCharacterEncoding("UTF-8");
-            stream = request.getInputStream();
-            isr = new InputStreamReader(stream);
-            br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\r\n");
-            }
-            br.close();
-            str = sb.toString();
-            logger.debug("huawei pay callback:{}", str);
-
-            if (StringUtils.isEmpty(str)) {
-                ArrayList<String> entries = new ArrayList<>();
-                Map<String, String[]> parameterMap = request.getParameterMap();
-                for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-                    entries.add(entry.getKey() + "=" + entry.getValue()[0]);
-                }
-                str = StringUtils.join(entries, "&");
-            }
 
             // 1.检查参数有效性
-            Map<String, Object> map = getValue(str);
+            request.setCharacterEncoding("UTF-8");
+            Map<String, Object> map = getValue(request);
+            logger.info("charge huawei map:{}", map.toString());
             if (map == null || map.isEmpty()) {
-                logger.error("huawei_pay_callback invalid request:{}", str);
                 return createResponse(INVALID_PARAMS);
             }
 
@@ -98,7 +70,7 @@ public class HuaweiPayController {
             // 获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(orderId));
             if (null == charge) {
-                logger.error("huawei_pay_callback接口异常: [获取缓存数据失败, requestBody={}, orderId={}]", str, orderId);
+                logger.error("huawei_pay_callback接口异常: [获取缓存数据失败, requestBody={}, orderId={}]", map.toString(), orderId);
                 return createResponse(OTHER_ERROR);
             }
 
@@ -109,38 +81,14 @@ public class HuaweiPayController {
             SdkParamCache paramCache = sdkService.getConfig(Integer.parseInt(charge.getPackageId()));
             String sign = (String) map.get("sign");
             String payPublicKey = paramCache.channelConfig().get("publicKey");
-            boolean verifySucceed = CommonUtil.rsaDoCheck(map, sign, payPublicKey);
+            boolean verifySucceed = CommonUtil.rsaDoCheck(map, sign, payPublicKey, (String) map.get("signType"));
 
-            // 6.判断回调验证是否成功，成功则进行异步发货
-            if (!verifySucceed) {
-                Map<String, String> data = MapsUtils.string2map(str);
-                if (data.containsKey("sysReserved")) {
-                    data.put("sysReserved", URLDecoder.decode(data.get("sysReserved"), "utf-8"));
-                }
-                if (data.containsKey("extReserved")) {
-                    data.put("extReserved", URLDecoder.decode(data.get("extReserved"), "utf-8"));
-                }
-                String sign2 = URLDecoder.decode(data.get("sign"), "utf-8");
-                data.remove("signType");
-                data.remove("sign");
-                String content = MapsUtils.createLinkString(data, true, false);
-                boolean verify = SignUtils.verify(content, payPublicKey, sign2);
-                if (verify) {
-                    String result = (String) map.get("result");
-                    if (result.equals(PAY_SUCCEED)) {
-                        //执行统一逻辑，包括入库和通知游戏
-                        callbackService.orderHandler(charge, paramCache);
-                    }
+            if (verifySucceed) {
+                if (charge.getAmount() != MoneyUtil.yuan2fen((String) map.get("amount"))) {
+                    orderService.illegalAmountHandler(charge);
+                    logger.error("huawei_pay_callback接口异常: [订单金额异常: order:{}, channelOrder:{}]", gson.toJson(charge), map.toString());
                     return createResponse(CHECK_SIGN_SUCCEED);
                 }
-                orderService.VerifyFailed(charge);
-                logger.error("huawei_pay_callback verify failed:[requestData={}]", str);
-                return createResponse(CHECK_SIGN_FAILED);
-            } else if (charge.getAmount() != MoneyUtil.yuan2fen((String) map.get("amount"))) {    //判断订单金额相符，若渠道没返回金额则跳过
-                orderService.illegalAmountHandler(charge);
-                logger.error("huawei_pay_callback接口异常: [订单金额异常: order:{}, channelOrder:{}]", gson.toJson(charge), map.toString());
-                return createResponse(CHECK_SIGN_SUCCEED);
-            } else {
                 String result = (String) map.get("result");
                 if (result.equals(PAY_SUCCEED)) {
                     logger.info("huawei订单成功");
@@ -154,20 +102,34 @@ public class HuaweiPayController {
             logger.error("huawei_pay_callback接口异常: [服务器异常: requestBody={}, error_message={}]", e.getMessage());
             return createResponse(OTHER_ERROR);
         } finally {
-            try {
-                if (null != isr) {
-                    isr.close();
-                }
-                if (null != stream) {
-                    stream.close();
-                }
-            } catch (Exception e) {
-                logger.error("huawei_pay_callback接口异常 stream close error : {}", e.getMessage(), e);
-            }
         }
+        return createResponse(CHECK_SIGN_SUCCEED);
     }
 
-    public Map<String, Object> getValue(String str) {
+    public Map<String, Object> getValue(HttpServletRequest request) {
+
+
+        String line = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            request.setCharacterEncoding("UTF-8");
+
+            InputStream stream = request.getInputStream();
+            InputStreamReader isr = new InputStreamReader(stream);
+            BufferedReader br = new BufferedReader(isr);
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\r\n");
+            }
+            System.out.println("The original data is : " + sb.toString());
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        String str = sb.toString();
+
         Map<String, Object> valueMap = new HashMap<String, Object>();
         if (null == str || "".equals(str)) {
             return valueMap;
@@ -175,11 +137,19 @@ public class HuaweiPayController {
 
         String[] valueKey = str.split("&");
         for (String temp : valueKey) {
-            String[] single = temp.split("=");
-            valueMap.put(single[0], single[1]);
+            if (temp != null) {
+                int idx = temp.indexOf('=');
+                int len = temp.length();
+                if (idx != -1) {
+                    String key = temp.substring(0, idx);
+                    String value = idx + 1 < len ? temp.substring(idx + 1) : "";
+                    valueMap.put(key, value);
+                }
+            }
         }
+        System.out.println("The parameters in map are : " + valueMap);
 
-        // 接口中，如下参数sign和extReserved、sysReserved是URLEncode的，所以需要decode，其他参数直接是原始信息发送，不需要decode
+        //接口中，如下参数sign和extReserved是URLEncode的，所以需要decode，其他参数直接是原始信息发送，不需要decode
         try {
             String sign = (String) valueMap.get("sign");
             String extReserved = (String) valueMap.get("extReserved");
@@ -198,9 +168,11 @@ public class HuaweiPayController {
                 sysReserved = URLDecoder.decode(sysReserved, "utf-8");
                 valueMap.put("sysReserved", sysReserved);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return valueMap;
     }
 

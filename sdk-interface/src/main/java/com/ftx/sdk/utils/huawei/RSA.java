@@ -24,9 +24,10 @@ public class RSA
      * SIGN_ALGORITHMS
      */
     public static final String SIGN_ALGORITHMS = "SHA1WithRSA";
+    public static final String SIGN_ALGORITHMS256 = "SHA256WithRSA";
 
-   
-    public static String sign(String content, String privateKey)
+
+    public static String sign(String content, String privateKey, String signtype)
     {
         String charset = "utf-8";
         try
@@ -35,7 +36,12 @@ public class RSA
             KeyFactory keyf = KeyFactory.getInstance("RSA");
             PrivateKey priKey = keyf.generatePrivate(priPKCS8);
 
-            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            java.security.Signature signature = null;
+            if ("RSA256".equals(signtype)) {
+                signature = java.security.Signature.getInstance(SIGN_ALGORITHMS256);
+            } else {
+                signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            }
 
             signature.initSign(priKey);
             signature.update(content.getBytes(charset));
@@ -52,8 +58,17 @@ public class RSA
         return "";
     }
 
-   
-    public static boolean doCheck(String content, String sign, String publicKey)
+    public static boolean rsaDoCheck(Map<String, Object> params, String sign, String publicKey, String signtype)
+    {
+        String content = RSA.getSignData(params);
+        System.out.println("The content for sign is : " + content.toString());
+        System.out.println("The sign is : " + sign);
+        System.out.println("The pubkey is : " + publicKey);
+
+        return RSA.doCheck(content, sign, publicKey, signtype);
+    }
+
+    public static boolean doCheck(String content, String sign, String publicKey, String signtype)
     {
         try
         {
@@ -61,7 +76,12 @@ public class RSA
             byte[] encodedKey = Base64.decode(publicKey);
             PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
 
-            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            java.security.Signature signature = null;
+            if ("RSA256".equals(signtype)) {
+                signature = java.security.Signature.getInstance(SIGN_ALGORITHMS256);
+            } else {
+                signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
+            }
 
             signature.initVerify(pubKey);
             signature.update(content.getBytes("utf-8"));
@@ -78,12 +98,11 @@ public class RSA
         return false;
     }
 
-  
+
     public static String getSignData(Map<String, Object> params)
     {
         StringBuffer content = new StringBuffer();
 
-        // 按照key做排序
         List<String> keys = new ArrayList<String>(params.keySet());
         Collections.sort(keys);
 
@@ -91,6 +110,10 @@ public class RSA
         {
             String key = (String) keys.get(i);
             if ("sign".equals(key))
+            {
+                continue;
+            }
+            if ("signType".equals(key))
             {
                 continue;
             }
@@ -107,13 +130,12 @@ public class RSA
         }
         return content.toString();
     }
-    
-    
+
+
     public static String getNoSortSignData(Map<String, Object> params)
     {
         StringBuffer content = new StringBuffer();
 
-        // 按照key做排序
         List<String> keys = new ArrayList<String>(params.keySet());
 
         for (int i = 0; i < keys.size(); i++)
