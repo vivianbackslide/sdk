@@ -21,7 +21,7 @@ public class PlfUserDaoImpl implements PlfUserDao {
 
     @Override
     public boolean updateRoleLoginTime(TGameUserRoleModel gameRoleInfo) {
-        String sql = "UPDATE `t_cp_userRole` SET `lastLoginTime`=CURRENT_TIME WHERE (`plfUserId`=:plfUserId) AND (`roleId`=:roleId)";
+        String sql = "UPDATE `t_cp_userRole` SET `lastLoginTime`= CURRENT_TIME WHERE (`plfUserId`= ?) AND (`roleId`= ?)";
         Object[] object = {gameRoleInfo.getPlfUserId(), gameRoleInfo.getRoleId()};
         return 0 != jdbcTemplate.update(sql, object);
     }
