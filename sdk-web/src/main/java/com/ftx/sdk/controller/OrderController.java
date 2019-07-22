@@ -2,10 +2,13 @@ package com.ftx.sdk.controller;
 
 import com.ftx.sdk.common.constants.DubboConstant;
 import com.ftx.sdk.entity.orm.TSdkOrder;
+import com.ftx.sdk.entity.sdk.SdkParamCache;
 import com.ftx.sdk.entity.sdk.SecurityRequest;
 import com.ftx.sdk.entity.sdk.result.ErrorCode;
 import com.ftx.sdk.entity.sdk.result.JsonResult;
+import com.ftx.sdk.service.channel.CallbackService;
 import com.ftx.sdk.service.channel.OrderService;
+import com.ftx.sdk.service.channel.SDKService;
 import com.google.gson.Gson;
 import org.apache.dubbo.config.annotation.Reference;
 import org.hibernate.exception.ConstraintViolationException;
@@ -25,6 +28,10 @@ public class OrderController {
 
     @Reference(version = DubboConstant.VERSION, check = false)
     private OrderService service;
+    @Reference(version = DubboConstant.VERSION, check = false)
+    private SDKService sdkService;
+    @Reference(version = DubboConstant.VERSION, check = false)
+    private CallbackService callbackService;
 
     @Autowired
     private Gson gson;
@@ -55,6 +62,26 @@ public class OrderController {
             response.setCode(ErrorCode.RequestError.REQUEST_PARAMETER_ERROR.getCode()).setMessage("创建订单失败，订单Id重复");
         }
 
+        return response;
+    }
+
+    @RequestMapping("supplement")
+    public JsonResult supplement(String orderId) {
+        logger.info("/order/supplement 入参:orderId={}", orderId);
+        JsonResult<Long> response = new JsonResult<>(ErrorCode.Success.SUCCESS.getCode());
+        TSdkOrder charge = service.queueOrder(Long.valueOf(orderId));
+        if (null == charge) {
+            logger.error("supplement error: order not found! orderId = {}", orderId);
+            response.setCode(ErrorCode.RequestError.REQUEST_PARAMETER_ERROR.getCode()).setMessage("订单查询失败");
+            return response;
+        }
+        SdkParamCache paramCache = sdkService.getConfig(Integer.parseInt(charge.getPackageId()));
+        if (null == paramCache) {
+            logger.error("supplement error: packageId not found! packageId = {}", charge.getPackageId());
+            response.setCode(ErrorCode.RequestError.REQUEST_PARAMETER_ERROR.getCode()).setMessage("package查询失败");
+            return response;
+        }
+        callbackService.orderHandler(charge, paramCache);
         return response;
     }
 }
