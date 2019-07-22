@@ -46,7 +46,7 @@ public class OppoPayController {
 
         logger.debug("oppo charge data:{}", gson.toJson(payInfo));
 
-
+        logger.info("oppo charge data:{}", gson.toJson(payInfo));
         // 获取订单
         TSdkOrder charge = orderService.queueOrder(Long.parseLong(payInfo.getPartnerOrder()));
         if (null == charge) {
@@ -96,6 +96,7 @@ public class OppoPayController {
 
     public boolean doCheck(String content, String sign, String publicKey) {
         try {
+            logger.info("oppo pay doCheck : content={}, sign={}, publicKey={}", content, sign, publicKey);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             byte[] encodedKey = Base64.decodeBase64(publicKey);
             PublicKey pubKey = keyFactory.generatePublic(new

@@ -28,7 +28,7 @@ import java.util.Map;
 public class ConfigController {
     Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private SDKService sdkService;
 
     @Autowired
@@ -39,6 +39,7 @@ public class ConfigController {
 
     /**
      * 客户端初始化
+     *
      * @param packageId 包Id
      * @return app、channel、package的联合参数
      */
@@ -46,7 +47,7 @@ public class ConfigController {
     public String init(@RequestParam int packageId) throws Exception {
 
         logger.debug("/config/init接口开始");
-
+        logger.info("/config/init 入参:packageId={}", packageId);
         /*logger.debug("/config/init的c3p0连接池状态：正在使用线程数={},空闲的线程数={},总连接数={}",
                 comboPooledDataSource.getNumBusyConnections(),comboPooledDataSource.getNumIdleConnections(),comboPooledDataSource.getNumConnections());*/
 
@@ -58,7 +59,7 @@ public class ConfigController {
 
         //执行查询逻辑
         SdkParamCache sdkParamConfig = sdkService.getConfig(packageId);
-        if (sdkParamConfig != null){
+        if (sdkParamConfig != null) {
             //确保Map类型的ChannelAPI参数已经加载
             sdkParamConfig.channelConfig();
 
@@ -68,7 +69,7 @@ public class ConfigController {
             configVO.setChannelLabel(sdkParamConfig.getChannelLabel());
             configVO.setPackageId(sdkParamConfig.getPackageId());
 
-            Map<String,String> map = JSON.parseObject(sdkParamConfig.getChannelConfig(), Map.class);
+            Map<String, String> map = JSON.parseObject(sdkParamConfig.getChannelConfig(), Map.class);
             configVO.setChannelConfig(map);
 
 

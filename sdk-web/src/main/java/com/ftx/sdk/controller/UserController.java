@@ -50,6 +50,7 @@ public class UserController {
         SubmitDataModel submitData = null;
         try {
             data = request.getData();
+            logger.info("/user/submit 入参:data={}", new Gson().toJson(data));
             submitData = new GsonBuilder().registerTypeAdapter(Timestamp.class, new JsonDeserializer<Timestamp>() {
                 @Override
                 public Timestamp deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

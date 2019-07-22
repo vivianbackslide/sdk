@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -35,8 +37,8 @@ public class BaiduLoginHandler extends LoginHandlerAdapter {
 
     @Override
     protected User doLogin(SdkParamCache configCache, LoginInfo loginInfo) {
-
-        String appId =configCache.channelConfig().get("appId");
+        logger.info("BaiduLoginHandler loginInfo:{}", gson.toJson(gson));
+        String appId = configCache.channelConfig().get("appId");
         String accessToken = loginInfo.getToken();
         String secretKey = configCache.channelConfig().get("channelAppSecret");
         String sign = MD5Util.getMD5(appId + accessToken + secretKey);
@@ -45,7 +47,9 @@ public class BaiduLoginHandler extends LoginHandlerAdapter {
         params.put("AccessToken", accessToken);
         params.put("Sign", sign);
 
+        logger.info("BaiduLoginHandler login startTime:{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         String jsonResult = HttpTools.doPost(getLoginRequestURL(configCache), params);
+        logger.info("BaiduLoginHandler login endTime:{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         if (Strings.isNullOrEmpty(jsonResult)) {
             logger.error("baidu登录API异常: [第三方接口无返回, app_id={}, channel_id={}]", loginInfo.getAppId(), configCache.getChannelId());
             return null;
@@ -80,8 +84,8 @@ public class BaiduLoginHandler extends LoginHandlerAdapter {
         String Content;
 
         boolean isSuccess(String appSecret) throws UnsupportedEncodingException {
-            if (ResultCode == 1){
-                String content = URLDecoder.decode(Content,"utf-8");
+            if (ResultCode == 1) {
+                String content = URLDecoder.decode(Content, "utf-8");
                 String contentbyte = Base64.decode(content);
                 String contentEncode = Base64.encode(contentbyte);
                 Sdk sdk = new Sdk();

@@ -23,20 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private OrderService service;
 
     @Autowired
     private Gson gson;
 
     @RequestMapping("createOrder")
-    public JsonResult createOrder(SecurityRequest request){
+    public JsonResult createOrder(SecurityRequest request) {
         JsonResult<Long> response = new JsonResult<>(ErrorCode.ServerError.SERVER_ERROR.getCode());
 
         String order = null;
         TSdkOrder clientCharge = null;
         try {
             order = request.getData();
+            logger.info("/order/createOrder 入参:order={}", order);
             clientCharge = gson.fromJson(order, TSdkOrder.class);
             if (!clientCharge.qualified()) {
                 throw new Exception();
@@ -50,7 +51,7 @@ public class OrderController {
             TSdkOrder charge = service.createNewOrder(clientCharge);
             if (charge != null)
                 response.setCode(ErrorCode.Success.SUCCESS.getCode()).setMessage("SUCCESS").setData(charge.getOrderId());
-        } catch (ConstraintViolationException ignored){
+        } catch (ConstraintViolationException ignored) {
             response.setCode(ErrorCode.RequestError.REQUEST_PARAMETER_ERROR.getCode()).setMessage("创建订单失败，订单Id重复");
         }
 

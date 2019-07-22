@@ -31,7 +31,7 @@ public class VerifyTokenController {
 
     private Logger logger = LoggerFactory.getLogger(VerifyTokenController.class);
 
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private UserService service;
     @Autowired
     private Gson gson;
@@ -41,6 +41,7 @@ public class VerifyTokenController {
 
     /**
      * 登陆校验，cp主动调用
+     *
      * @param loginInfo 数据集
      * @return User
      */
@@ -48,16 +49,16 @@ public class VerifyTokenController {
     public JsonResult<?> checkLogin(@Validated LoginInfo loginInfo, BindingResult bindingResult) throws SQLException {
 
         logger.debug("/verifyToken接口开始");
-
+        logger.info("/verifyToken 入参:loginInfo={}, bindingResult={}", gson.toJson(loginInfo), gson.toJson(bindingResult));
        /* logger.debug("/verifyToken的c3p0连接池状态：正在使用线程数={},空闲的线程数={},总连接数={}",
                 comboPooledDataSource.getNumBusyConnections(),comboPooledDataSource.getNumIdleConnections(),comboPooledDataSource.getNumConnections());*/
 
         JsonResult<User> response = new JsonResult<>(ErrorCode.ServerError.SERVER_ERROR.getCode());
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
             StringBuilder message = new StringBuilder();
-            for (ObjectError error : errors){
+            for (ObjectError error : errors) {
                 message.append(error.getDefaultMessage()).append(",");
             }
             logger.error("登陆异常:[请求参数不完整, packageId:{}, message:{}]", loginInfo.getPackageId(), message.toString());
@@ -70,13 +71,13 @@ public class VerifyTokenController {
             if (null != user) {
                 response.setCode(ErrorCode.Success.SUCCESS.getCode()).setMessage("SUCCESS").setData(user);
 //                logger.info("登录成功:[appId={}, channelId={}, channelName={}, userId={}]",loginInfo.getAppId(), user.getChannelId(), user.getChannelName(), user.getUserId());
-            }else
+            } else
                 response.setCode(ErrorCode.APIResultError.INTERFACE_FAILED_RESULT.getCode()).setMessage("checkLogin fail");
-        }catch (JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             response.setCode(ErrorCode.RequestError.REQUEST_PARAMETER_ERROR.getCode()).setMessage("data serialized Exception");
-        }catch (SignVerifyException e) {
+        } catch (SignVerifyException e) {
             response.setCode(ErrorCode.RequestError.REQUEST_SIGN_ERROR.getCode()).setMessage(e.getMessage());
-        }catch (ServerException e) {
+        } catch (ServerException e) {
             response.setCode(ErrorCode.ServerError.SERVER_ERROR.getCode()).setMessage(e.getMessage());
         }
 

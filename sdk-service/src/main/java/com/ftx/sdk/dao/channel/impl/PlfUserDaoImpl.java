@@ -28,8 +28,8 @@ public class PlfUserDaoImpl implements PlfUserDao {
 
     @Override
     public void createUserRole(TGameUserRoleModel gameRoleInfo) {
-        String sql = "insert into t_cp_userRole (plfUserId, roleId, roleName, roleLevel, zoneId, zoneName, balance, vipLevel, partyName, createTime, roleLevelChangeTime, lastLoginTime, lastLogoutTime) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] object = {gameRoleInfo.getPlfUserId(), gameRoleInfo.getRoleId(), gameRoleInfo.getRoleName(), gameRoleInfo.getRoleLevel(), gameRoleInfo.getZoneId(), gameRoleInfo.getZoneName(), gameRoleInfo.getBalance(), gameRoleInfo.getVipLevel(), gameRoleInfo.getPartyName(), gameRoleInfo.getCreateTime(), gameRoleInfo.getRoleLevelChangeTime(), gameRoleInfo.getLastLoginTime(), gameRoleInfo.getLastLogoutTime()};
+        String sql = "insert into t_cp_userRole (plfUserId, roleId, roleName, roleLevel, zoneId, zoneName, balance, vipLevel, partyName, createTime, roleLevelChangeTime, lastLoginTime, lastLogoutTime) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,? FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM t_cp_userRole WHERE plfUserId = ? AND roleId = ?)";
+        Object[] object = {gameRoleInfo.getPlfUserId(), gameRoleInfo.getRoleId(), gameRoleInfo.getRoleName(), gameRoleInfo.getRoleLevel(), gameRoleInfo.getZoneId(), gameRoleInfo.getZoneName(), gameRoleInfo.getBalance(), gameRoleInfo.getVipLevel(), gameRoleInfo.getPartyName(), gameRoleInfo.getCreateTime(), gameRoleInfo.getRoleLevelChangeTime(), gameRoleInfo.getLastLoginTime(), gameRoleInfo.getLastLogoutTime(),gameRoleInfo.getPlfUserId(),gameRoleInfo.getRoleId()};
         jdbcTemplate.update(sql, object);
     }
 
