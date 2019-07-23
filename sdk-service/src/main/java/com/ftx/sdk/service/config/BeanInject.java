@@ -3,6 +3,10 @@ package com.ftx.sdk.service.config;
 import com.ftx.sdk.login.LoginHandlerManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,5 +39,12 @@ public class BeanInject {
         return new JsonParser();
     }
 
+    @Bean
+    public CuratorFramework client() {
+        RetryPolicy retry = new ExponentialBackoffRetry(1000, 3);
+        CuratorFramework client = CuratorFrameworkFactory.newClient("127.0.0.1:2182", 60000, 15000, retry);
+        client.start();
+        return client;
+    }
 
 }

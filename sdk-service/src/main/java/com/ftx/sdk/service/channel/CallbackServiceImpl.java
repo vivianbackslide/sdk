@@ -10,6 +10,9 @@ import com.ftx.sdk.utils.MapsUtils;
 import com.ftx.sdk.utils.VerifyUitl;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,8 @@ public class CallbackServiceImpl implements CallbackService {
     private SDKService sdkService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CuratorFramework client;
    /* @Autowired
     private RedisService redisService;*/
     /*@Autowired
@@ -155,21 +160,37 @@ public class CallbackServiceImpl implements CallbackService {
                 logger.error("调用发货接口失败:[未配置发货接口, package_id={}]", callbackInfo.getPackageId());
                 return;
             }
+            InterProcessLock lock = new InterProcessMutex(client, "/distributed-lock/" + callbackInfo.getPlatformBillNo());
+            try {
+                lock.acquire();
+                TSdkOrder charge = orderService.queueOrder(Long.valueOf(callbackInfo.getPlatformBillNo()));
+                if (ChargeStatus.PaySuccessNotifySuccess.getType() == charge.getStatus()) {
+                    logger.info("订单号:" + charge.getOrderId() + "已完成,无需重复发货");
+                    return;
+                }
+                String result = HttpTools.doPost(notifyUrl, MapsUtils.object2StringMap(callbackInfo));
+                logger.info("已通知游戏发货:[URL={}, callbackInfo={}]", notifyUrl, callbackInfo.toString());
 
+                //更新通知次数
+                //scount++;
 
-            String result = HttpTools.doPost(notifyUrl, MapsUtils.object2StringMap(callbackInfo));
-            logger.info("已通知游戏发货:[URL={}, callbackInfo={}]", notifyUrl, callbackInfo.toString());
-
-            //更新通知次数
-            //scount++;
-
-            if (null == result || !"success".equalsIgnoreCase(result.trim())) {
-                logger.info("调用发货接口失败:[URL={}, package_id={}, result={}]", notifyUrl, callbackInfo.getPackageId(), result);
-                handleFailed();
-            } else {
-                logger.info("调用发货接口成功:[URL={}, package_id={}]", notifyUrl, callbackInfo.getPackageId());
-                handleSucceed();
+                if (null == result || !"success".equalsIgnoreCase(result.trim())) {
+                    logger.info("调用发货接口失败:[URL={}, package_id={}, result={}]", notifyUrl, callbackInfo.getPackageId(), result);
+                    handleFailed();
+                } else {
+                    logger.info("调用发货接口成功:[URL={}, package_id={}]", notifyUrl, callbackInfo.getPackageId());
+                    handleSucceed();
+                }
+            } catch (Exception e) {
+                logger.error("Notifier run error", e.getMessage());
+            } finally {
+                try {
+                    lock.release();
+                } catch (Exception e) {
+                    logger.error("Notifier run error", e.getMessage());
+                }
             }
+
         }
 
 
@@ -179,9 +200,9 @@ public class CallbackServiceImpl implements CallbackService {
         }
 
         private void handleFailed() {
-           /* if (1 == count) {*/
-                orderService.orderUpdateOnFirstCallback(Long.parseLong(callbackInfo.getPlatformBillNo()), callbackInfo.getChannelBillNo(), ChargeStatus.PaySuccessNotifyFailed);
-                //beginTimeMillis = System.currentTimeMillis();
+            /* if (1 == count) {*/
+            orderService.orderUpdateOnFirstCallback(Long.parseLong(callbackInfo.getPlatformBillNo()), callbackInfo.getChannelBillNo(), ChargeStatus.PaySuccessNotifyFailed);
+            //beginTimeMillis = System.currentTimeMillis();
             /* }*/
             //pushNotification(this);
         }
