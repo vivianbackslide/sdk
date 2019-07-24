@@ -194,6 +194,7 @@ public class CallbackServiceImpl implements CallbackService {
                     if (null != stat && CollectionUtils.isEmpty(children)) {
                         client.delete().guaranteed().forPath(path);
                     }
+                    logger.info("zk路径(" + path + ")是否存在-{}", client.checkExists().forPath(path) != null);
                 } catch (Exception e) {
                     logger.error("Notifier run error", e.getMessage());
                 }
