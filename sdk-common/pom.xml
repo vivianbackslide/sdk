@@ -38,4 +38,6 @@
 
     </dependencies>
 
+    <build><finalName>sdk-common</finalName></build>
+
 </project>
