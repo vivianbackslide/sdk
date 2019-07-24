@@ -13,11 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -160,7 +162,8 @@ public class CallbackServiceImpl implements CallbackService {
                 logger.error("调用发货接口失败:[未配置发货接口, package_id={}]", callbackInfo.getPackageId());
                 return;
             }
-            InterProcessLock lock = new InterProcessMutex(client, "/distributed-lock/" + callbackInfo.getPlatformBillNo());
+            String path = "/distributed-lock/" + callbackInfo.getPlatformBillNo();
+            InterProcessLock lock = new InterProcessMutex(client, path);
             try {
                 lock.acquire();
                 TSdkOrder charge = orderService.queueOrder(Long.valueOf(callbackInfo.getPlatformBillNo()));
@@ -186,6 +189,11 @@ public class CallbackServiceImpl implements CallbackService {
             } finally {
                 try {
                     lock.release();
+                    Stat stat = client.checkExists().forPath(path);
+                    List<String> children = client.getChildren().forPath(path);
+                    if (null != stat && CollectionUtils.isEmpty(children)) {
+                        client.delete().guaranteed().forPath(path);
+                    }
                 } catch (Exception e) {
                     logger.error("Notifier run error", e.getMessage());
                 }
