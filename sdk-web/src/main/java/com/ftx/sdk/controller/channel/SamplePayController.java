@@ -35,6 +35,7 @@ public class SamplePayController {
 
     @RequestMapping(value = "/charge/sample")
     public String callback(String orderid, String exInfo) {
+        logger.info("/charge/sample 入参:orderid={}, exInfo={}", orderid, exInfo);
         try {
             // 获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(orderid));
