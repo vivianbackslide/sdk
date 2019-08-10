@@ -46,6 +46,7 @@ public class MaoerPayController {
         try {
 
             logger.debug("maoer charge data:{}", gson.toJson(maoerPayModel));
+            logger.info("maoer charge data:{}", gson.toJson(maoerPayModel));
             //获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(maoerPayModel.getCallback_info()));
             if (null == charge) {

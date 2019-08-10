@@ -43,6 +43,7 @@ public class MeizuPayController {
     public String callback(@ModelAttribute MeizuPayModel meizuPayModel) {
         try {
             logger.debug("meizu charge data:{}", gson.toJson(meizuPayModel));
+            logger.info("meizu charge data:{}", gson.toJson(meizuPayModel));
             // 获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(meizuPayModel.getCp_order_id()));
             if(null == charge) {

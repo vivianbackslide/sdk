@@ -55,7 +55,7 @@ public class VivoPayController {
     public String callback(@ModelAttribute VivoPayModel payInfo) {
 
         logger.debug("vivo charge data:{}", gson.toJson(payInfo));
-
+        logger.info("vivo charge data:{}", gson.toJson(payInfo));
         // 获取订单
         TSdkOrder charge = orderService.queueOrder(Long.parseLong(payInfo.getCpOrderNumber()));
         if (null == charge) {

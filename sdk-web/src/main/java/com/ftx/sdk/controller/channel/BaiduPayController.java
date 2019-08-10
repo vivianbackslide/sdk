@@ -50,6 +50,7 @@ public class BaiduPayController {
     public String callback(@ModelAttribute BaiduPayModel baiduPayModel) {
         try {
             logger.debug("baidu charge data:{}", gson.toJson(baiduPayModel));
+            logger.info("baidu charge data:{}", gson.toJson(baiduPayModel));
 
             // 获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(baiduPayModel.getCooperatorOrderSerial()));

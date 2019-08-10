@@ -46,6 +46,7 @@ public class YijiePayController {
     public String callback(@ModelAttribute YijiePayModel yijiePayModel) {
         try {
             logger.debug("yijie charge data:{}", gson.toJson(yijiePayModel));
+            logger.info("yijie charge data:{}", gson.toJson(yijiePayModel));
             // 先对易接订单进行分解
             String orderId = yijiePayModel.getCbi();
             String packageId = "";

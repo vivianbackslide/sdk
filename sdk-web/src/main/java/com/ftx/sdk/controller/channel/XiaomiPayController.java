@@ -44,6 +44,7 @@ public class XiaomiPayController {
     public String callback(@ModelAttribute XiaoMiPayModel xiaomiPayModel) {
         try {
             logger.debug("xiaomi charge data:{}", gson.toJson(xiaomiPayModel));
+            logger.info("xiaomi charge data:{}", gson.toJson(xiaomiPayModel));
             // 获取订单
             TSdkOrder charge = orderService.queueOrder(Long.parseLong(xiaomiPayModel.getCpOrderId()));
             if(null == charge) {

@@ -9,6 +9,8 @@ import com.ftx.sdk.service.channel.SDKService;
 import com.ftx.sdk.service.channel.TencentPayService;
 import com.ftx.sdk.utils.tencent.TencentResponseUtil;
 import org.apache.dubbo.config.annotation.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +24,7 @@ import java.util.List;
  */
 @RestController
 public class TencentPayController {
+    private Logger logger = LoggerFactory.getLogger(TencentPayController.class);
     @Reference(version = DubboConstant.VERSION,check = false)
     private TencentPayService service;
     @Reference(version = DubboConstant.VERSION,check = false)
@@ -31,7 +34,7 @@ public class TencentPayController {
 
     @RequestMapping(value = "/charge/tencent/pay")
     public String callback(@Validated TencentPayModel payModel, BindingResult bindingResult) {
-
+        logger.info("/charge/tencent/pay 入参:payModel-{}, bindingResult-{}", payModel, bindingResult);
         if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
             StringBuilder message = new StringBuilder();

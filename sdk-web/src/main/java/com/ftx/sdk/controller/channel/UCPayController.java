@@ -50,6 +50,7 @@ public class UCPayController {
             stream = request.getInputStream();
             requestBody = IOUtils.toString(stream, "UTF-8");
             logger.debug("uc charge data:{}", requestBody);
+            logger.info("uc charge data:{}", requestBody);
             // 1.检查字符串参数是否为空
             if (Strings.isNullOrEmpty(requestBody)) {
                 logger.error("uc_pay_callback接口异常: [requestBody = null]");

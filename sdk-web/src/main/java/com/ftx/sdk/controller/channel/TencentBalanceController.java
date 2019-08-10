@@ -26,7 +26,7 @@ import java.util.List;
 @RestController
 public class TencentBalanceController {
     private Logger logger = LoggerFactory.getLogger(TencentBalanceController.class);
-    @Reference(version = DubboConstant.VERSION,check = false)
+    @Reference(version = DubboConstant.VERSION, check = false)
     private TencentPayService tencentPayService;
     @Autowired
     private JsonParser jsonParser;
@@ -35,25 +35,24 @@ public class TencentBalanceController {
 
     @RequestMapping(value = "/charge/tencent/query_balance")
     public String callback(@Validated TencentPayModel payModel, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+        logger.info("/charge/tencent/query_balance 入参:payModel-{}, bindingResult-{}", payModel, bindingResult);
+        if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
             StringBuilder message = new StringBuilder();
-            for (ObjectError error : errors){
+            for (ObjectError error : errors) {
                 message.append(error.getDefaultMessage()).append(",");
             }
             return TencentResponseUtil.create(-1, message.toString());
         }
 
-        try
-        {
+        try {
             String response = tencentPayService.queryBalance(payModel);
             JsonObject jsonObject = jsonParser.parse(response).getAsJsonObject();
             int code = jsonObject.get("ret").getAsInt();
             String message = TencentUtil.getMessageByCode(code);
             long balance = code == 0 ? jsonObject.get("balance").getAsLong() : 0;
             return TencentResponseUtil.create(code, message, balance);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             logger.error("tencent query balance error, {}, {}", e.getMessage(), gson.toJson(payModel));
             return TencentResponseUtil.create(-1, e.getMessage(), 0);
         }

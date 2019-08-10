@@ -41,6 +41,7 @@ public class QihooPayController {
     public String callback(@ModelAttribute QihooPayModel qihooPayModel) {
         try {
             logger.debug("360 charge data:{}", gson.toJson(qihooPayModel));
+            logger.info("360 charge data:{}", gson.toJson(qihooPayModel));
 
             String orderId = qihooPayModel.getApp_order_id();
             // 获取订单
