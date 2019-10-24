@@ -2,13 +2,13 @@ package com.ftx.sdk.model;
 
 public class HimaPayModel {
     private String orderId;//渠道商订单号
-    private int user_id;//渠道商⽤户ID
+    private String user_id;//渠道商⽤户ID
     private String system_account;//渠道商⽤户唯⼀帐号
     private String serverId;//服务器id
-    private int char_id;//⽤户⻆⾊ID
-    private int amount;//充值⾦额(单位：元)
-    private int game_coin;//充值的游戏币
-    private int offer;//赠送元宝（单件：个）
+    private String char_id;//⽤户⻆⾊ID
+    private String amount;//充值⾦额(单位：元)
+    private String game_coin;//充值的游戏币
+    private String offer;//赠送元宝（单件：个）
     private String cpOrderId;//游戏商订单号
     private int success;//订单状态：0成功，1失败
     private String msg;//订单失败时的错误信息
@@ -22,11 +22,11 @@ public class HimaPayModel {
         this.orderId = orderId;
     }
 
-    public int getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
 
@@ -46,35 +46,35 @@ public class HimaPayModel {
         this.serverId = serverId;
     }
 
-    public int getChar_id() {
+    public String getChar_id() {
         return char_id;
     }
 
-    public void setChar_id(int char_id) {
+    public void setChar_id(String char_id) {
         this.char_id = char_id;
     }
 
-    public int getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
-    public int getGame_coin() {
+    public String getGame_coin() {
         return game_coin;
     }
 
-    public void setGame_coin(int game_coin) {
+    public void setGame_coin(String game_coin) {
         this.game_coin = game_coin;
     }
 
-    public int getOffer() {
+    public String getOffer() {
         return offer;
     }
 
-    public void setOffer(int offer) {
+    public void setOffer(String offer) {
         this.offer = offer;
     }
 
