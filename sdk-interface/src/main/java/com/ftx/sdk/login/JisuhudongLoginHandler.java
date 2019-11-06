@@ -6,6 +6,8 @@ import com.ftx.sdk.entity.user.LoginInfo;
 import com.ftx.sdk.entity.user.User;
 import com.ftx.sdk.exception.ChannelLoginException;
 import com.ftx.sdk.utils.HttpTools;
+import com.ftx.sdk.utils.MapsUtils;
+import com.ftx.sdk.utils.security.MD5Util;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -29,14 +31,21 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
 
         Map<String, String> params = Maps.newHashMap();
         params.put("token", loginInfo.getToken());
-        params.put("sign", loginInfo.getSign());
         params.put("time", String.valueOf(System.currentTimeMillis()));
 
-        String jsonResult = HttpTools.doPost("https://api.jisuhudong.com/cp/v1/members/token", params);
+        String signStr = MapsUtils.createLinkString(params, true, false);
+        signStr = signStr + "&secret=" + configCache.channelConfig().get("channelAppKey");
+        logger.info("极速互动原始签名sign = {}", signStr);
+        String mySign = MD5Util.getMD5(signStr);
+        params.put("sign", mySign);
+
+        logger.info("jshd login params = {}", gson.toJson(params));
+
+        String jsonResult = HttpTools.doGet("https://api.jisuhudong.com/cp/v1/members/token", params);
         logger.info("jisuhudong login result:" + jsonResult);
         Result result = gson.fromJson(jsonResult, Result.class);
 
-        if(result.isSuccess()) {
+        if (result.isSuccess()) {
             logger.info("jisuhudong渠道API登录验证成功:[loginInfo={}, result={}]", loginInfo.toString(), jsonResult);
             return new User(loginInfo.getUserId(), configCache);
         } else {
@@ -47,9 +56,9 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
 
 
     class Result {
-         int code;
-         String msg;
-         String data;
+        int code;
+        String msg;
+        Map<String, String> data;
 
         public int getCode() {
             return code;
@@ -67,11 +76,11 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
             this.msg = msg;
         }
 
-        public String getData() {
+        public Map<String, String> getData() {
             return data;
         }
 
-        public void setData(String data) {
+        public void setData(Map<String, String> data) {
             this.data = data;
         }
 
