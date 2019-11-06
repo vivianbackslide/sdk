@@ -49,7 +49,7 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
     class Result {
          int code;
          String msg;
-         Map<String, Object> data;
+         String data;
 
         public int getCode() {
             return code;
@@ -67,11 +67,11 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
             this.msg = msg;
         }
 
-        public Map<String, Object> getData() {
+        public String getData() {
             return data;
         }
 
-        public void setData(Map<String, Object> data) {
+        public void setData(String data) {
             this.data = data;
         }
 
