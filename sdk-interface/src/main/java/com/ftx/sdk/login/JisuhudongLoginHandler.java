@@ -47,7 +47,7 @@ public class JisuhudongLoginHandler extends LoginHandlerAdapter {
 
         if (result.isSuccess()) {
             logger.info("jisuhudong渠道API登录验证成功:[loginInfo={}, result={}]", loginInfo.toString(), jsonResult);
-            return new User(loginInfo.getUserId(), configCache);
+            return new User(result.getData().get("uid"), configCache);
         } else {
             logger.warn("jisuhudonga登录API异常: [第三方接口返回非成功状态, app_id={}, channel_id={}, result={}]", loginInfo.getAppId(), configCache.getChannelId(), jsonResult);
             return null;
