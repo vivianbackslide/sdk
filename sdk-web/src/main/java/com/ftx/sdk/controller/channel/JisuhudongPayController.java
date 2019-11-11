@@ -70,7 +70,7 @@ public class JisuhudongPayController {
             String mySign = MD5Util.getMD5(signStr);
 
             // 金额校验
-            if (charge.getAmount() / 100 != Integer.valueOf(jisuhudongPayModel.getAmount())) {    //判断订单金额相符，若渠道没返回金额则跳过
+            if (charge.getAmount() != Integer.valueOf(jisuhudongPayModel.getAmount())) {    //判断订单金额相符，若渠道没返回金额则跳过
                 orderService.illegalAmountHandler(charge);
                 logger.error("jisuhudong_pay_callback接口异常: [订单金额异常: order:{}, channelOrder:{}]", gson.toJson(charge), gson.toJson(jisuhudongPayModel));
                 return FAILED;
