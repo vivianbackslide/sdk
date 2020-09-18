@@ -10,17 +10,17 @@ import com.ftx.sdk.entity.sdk.SdkParamCache;
 import com.ftx.sdk.entity.user.LoginInfo;
 import com.ftx.sdk.entity.user.User;
 import com.ftx.sdk.exception.ChannelLoginException;
-import com.ftx.sdk.utils.HttpTools;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author 83454
@@ -44,13 +44,13 @@ public class MiquwanLoginHandler extends LoginHandlerAdapter {
 
         JsonObject jsonObject = new JsonObject();
 
-        Map<String, Object> map = new HashMap<>(4);
-        map.put("token", loginInfo.getToken());
-        map.put("appId", loginInfo.getAppId());
-        map.put("userId", loginInfo.getUserId());
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("token", loginInfo.getToken());
+        params.add("appId", String.valueOf(loginInfo.getAppId()));
+        params.add("userId", loginInfo.getUserId());
 
         String url = getLoginRequestURL(configCache);
-        String response = HttpTools.doPostByConnection(url, gson.toJson(map));
+        String response = postForm(url, params);
 
         logger.info("米趣玩登录响应报文：{}", response);
 
@@ -66,4 +66,15 @@ public class MiquwanLoginHandler extends LoginHandlerAdapter {
             return null;
         }
     }
+
+    public String postForm(String url, MultiValueMap<String, String> params) {
+        RestTemplate client = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        return response.getBody();
+    }
+
 }
