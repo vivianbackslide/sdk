@@ -31,7 +31,7 @@ import java.util.Map;
 @ChannelAnnotation(channelId = 20028, channelLabel = "miquwan", channelName = "米趣玩")
 public class MiquwanLoginHandler extends LoginHandlerAdapter {
 
-    private Logger logger = LoggerFactory.getLogger(AligamesLoginHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MiquwanLoginHandler.class);
 
     @Autowired
     private JsonParser jsonParser;
@@ -54,7 +54,7 @@ public class MiquwanLoginHandler extends LoginHandlerAdapter {
 
         logger.info("米趣玩登录响应报文：{}", response);
 
-        if (1 == Integer.valueOf(response)) {
+        if ("1".equals(response)) {
             logger.debug("米趣玩登录API登录验证成功:[login_info={}, result={}]", loginInfo.toString(), response);
             User user = new User();
             user.setChannelId(configCache.getChannelId());
