@@ -51,7 +51,7 @@ public class MiquwanPayController {
             logger.debug("miquwan charge data:{}", gson.toJson(miquwanPayModel));
             logger.info("miquwan charge data:{}", gson.toJson(miquwanPayModel));
             // 获取订单
-            TSdkOrder charge = orderService.queueOrder(Long.parseLong(miquwanPayModel.getOrderId()));
+            TSdkOrder charge = orderService.queueOrder(Long.parseLong(miquwanPayModel.getCpOrderID()));
             if (null == charge) {
                 logger.error("miquwan_pay_callback接口异常: [获取缓存数据失败, requestBody={}, orderId={}]", gson.toJson(miquwanPayModel), miquwanPayModel.getOrderId());
                 return gson.toJson(new XiaoMiResult(1515, "cpOrderId 错误"));
